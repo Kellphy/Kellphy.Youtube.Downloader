@@ -59,7 +59,6 @@ def download_audio(playlist_id):
                 video_id = entry['id']
                 # Stop if the last video ID is reached
                 if last_video_id and video_id == last_video_id:
-                    print(f"All new videos up to [{video_id}] have been downloaded for playlist {playlist_url}.")
                     break
                 entries.append(entry)
                 
@@ -67,8 +66,6 @@ def download_audio(playlist_id):
         except Exception as e:
             print(f"Failed to extract playlist info for {playlist_url}: {e}")
             return
-
-    new_videos_downloaded = False
 
     # Configure yt-dlp options for audio extraction in M4A format
     ydl_opts = {
@@ -82,7 +79,7 @@ def download_audio(playlist_id):
     }
     
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        print(f"Downloading {entries.count} videos ...")
+        print(f"Downloading {len(entries)} videos ...")
         # Loop through the videos in the playlist
         for entry in entries:
             video_id = entry['id']
@@ -91,14 +88,12 @@ def download_audio(playlist_id):
             print(f"Downloading audio for [{video_id}] {video_title} ...")
             try:
                 ydl.download([entry['url']])
-                new_videos_downloaded = True
                 # Update the last downloaded video ID after each successful download
                 set_last_video_id(playlist_id, video_id)
             except Exception as e:
                 print(f"Failed to download [{video_id}] {video_title}: {e}")
-
-    if not new_videos_downloaded:
-        print(f"No new videos to download for playlist {playlist_url}.")
+    
+    print(f"Finished!")
 
 # Main execution block to process playlists from the download_info.json file
 if __name__ == "__main__":
