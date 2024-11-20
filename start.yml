@@ -1,0 +1,8 @@
+services:
+  yt-dlp-m4a:
+    build: .
+    container_name: yt-dlp-m4a-downloader
+    volumes:
+      - .:/app/  # Mount current directory to /app inside the container
+    environment:
+      - PYTHONUNBUFFERED=1  # Keep logs printed to the console
