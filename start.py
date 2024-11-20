@@ -3,13 +3,13 @@ import json
 import os
 
 # Define the path for the stored data
-data_file = 'download_info.json'
+DATA_FILE = 'download_info.json'
 
 # Function to read the stored data for all playlists
 def get_all_download_info():
-    if os.path.exists(data_file):
-        with open(data_file, 'r') as f:
-            return json.load(f)
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, 'r') as file:
+            return json.load(file)
     return {"playlists": []}
 
 # Function to get the last video ID for a specific playlist by ID
@@ -32,8 +32,8 @@ def set_last_video_id(playlist_id, video_id):
         # If the playlist isn't in the list, add it
         data["playlists"].append({"id": playlist_id, "video_id": video_id})
     
-    with open(data_file, 'w') as f:
-        json.dump(data, f, indent=4)
+    with open(DATA_FILE, 'w') as file:
+        json.dump(data, file, indent=4)
 
 # Function to generate the playlist URL from the playlist ID
 def generate_playlist_url(playlist_id):
@@ -46,10 +46,15 @@ def download_audio(playlist_id):
     # Retrieve the last downloaded video ID for this playlist
     last_video_id = get_last_video_id(playlist_id)
 
+    # Configure yt-dlp options for playlist information
+    playlist_ydl_opts = {
+        'extract_flat': True,
+        'quiet': True
+    }
+
     entries = []
-    with yt_dlp.YoutubeDL({'extract_flat': True, "quiet": True}) as ydl:
-        # Get the playlist info
-        print(f"Getting playlist info ...")
+    with yt_dlp.YoutubeDL(playlist_ydl_opts) as ydl:
+        print(f"Getting playlist info for {playlist_url} ...")
         try:
             playlist_info = ydl.extract_info(playlist_url, download=False)
             entries_all = playlist_info.get('entries', [])
@@ -68,7 +73,7 @@ def download_audio(playlist_id):
             return
 
     # Configure yt-dlp options for audio extraction in M4A format
-    ydl_opts = {
+    audio_ydl_opts = {
         'format': 'm4a/bestaudio/best',
         'outtmpl': './Downloads/%(channel)s - %(title)s.%(ext)s',
         'postprocessors': [{  # Extract audio using ffmpeg
@@ -78,7 +83,7 @@ def download_audio(playlist_id):
         'quiet': True
     }
     
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+    with yt_dlp.YoutubeDL(audio_ydl_opts) as ydl:
         print(f"Downloading {len(entries)} videos ...")
         # Loop through the videos in the playlist
         for entry in entries:
@@ -93,7 +98,7 @@ def download_audio(playlist_id):
             except Exception as e:
                 print(f"Failed to download [{video_id}] {video_title}: {e}")
     
-    print(f"Finished!")
+    print("Finished!")
 
 # Main execution block to process playlists from the download_info.json file
 if __name__ == "__main__":
