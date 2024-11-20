@@ -18,7 +18,7 @@ if %errorlevel% neq 0 (
 
 REM Loop through each dropped file and run docker-compose up
 for %%F in (%*) do (
-    start cmd /k "docker-compose -f "%%~F" up --force-recreate --pull "always""
+    start cmd /k "docker-compose -f "%%~F" up --build"
 )
 
 :end

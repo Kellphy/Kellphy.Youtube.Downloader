@@ -1,4 +1,6 @@
-FROM python:3.10-slim
+FROM python:slim
+
+WORKDIR /app
 
 # Install dependencies
 RUN apt-get update && \
@@ -7,6 +9,8 @@ RUN apt-get update && \
 
 # Install Python dependencies
 RUN pip install yt-dlp
+
+COPY . /app/
 
 # Command to run the script
 CMD ["python", "start.py"]
