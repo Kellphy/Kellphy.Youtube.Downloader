@@ -37,7 +37,7 @@ def set_last_video_id(playlist_id, video_id):
 
 # Function to generate the playlist URL from the playlist ID
 def generate_playlist_url(playlist_id):
-    return f"https://www.youtube.com/playlist?list={playlist_id}"
+    return f"https://youtube.com/playlist?list={playlist_id}"
 
 # Function to download audio from videos in a playlist
 def download_audio(playlist_id):
